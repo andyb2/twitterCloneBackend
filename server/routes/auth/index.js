@@ -60,7 +60,12 @@ router.post('/login', async (req, res, next) => {
                 process.env.SESSION_SECRET,
                 { expiresIn: 86400 }
             );
-            res.status(201).json({ ...userData, token })
+            res.status(201).json({
+                id: userData.dataValues.id,
+                username: userData.dataValues.username,
+                email: userData.dataValues.email,
+                token: token
+            })
         }
     } catch (error) {
         next(error)
