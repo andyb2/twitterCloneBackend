@@ -9,6 +9,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json())
 app.use(express.static(join(__dirname, "public")));
 
+app.use("/auth", require("./routes/auth"));
+
 app.listen(PORT, function () {
     console.log(`Server running on port: ${PORT}`)
 })
