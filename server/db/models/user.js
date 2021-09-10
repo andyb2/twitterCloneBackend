@@ -24,13 +24,16 @@ const User = db.define("user", {
     },
 });
 
+User.prototype.checkCorrectPassword = async (password, hash) => {
+    const isCorrect = await bcrypt.compare(password, hash)
+    return isCorrect
+}
+
 const setSaltAndPassword = async (user) => {
     if (user.changed("password")) {
         const passwordHash = await bcrypt.hash(user.password(), 10)
         user.password = passwordHash
     }
-    // const isvalid = await bcrypt.compare('123456', user.password())
-    // console.log(isvalid)
 };
 
 
