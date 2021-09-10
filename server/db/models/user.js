@@ -24,10 +24,6 @@ const User = db.define("user", {
     },
 });
 
-User.encryptPassword = function (plainPassword, salt) {
-    return crypto.createHash("RSA-SHA256").update(plainPassword).update(salt).digest("hex");
-};
-
 const setSaltAndPassword = async (user) => {
     if (user.changed("password")) {
         const passwordHash = await bcrypt.hash(user.password(), 10)
