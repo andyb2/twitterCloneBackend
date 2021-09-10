@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../db");
 const bcrypt = require('bcrypt');
-const saltRounds = 10
 
 const User = db.define("user", {
     username: {
@@ -17,21 +16,29 @@ const User = db.define("user", {
     },
     password: {
         type: Sequelize.STRING,
+        validate: { min: 6 },
         allowNull: false,
-        validate: { min: 8 }
-    }
+        get() {
+            return () => this.getDataValue("password");
+        }
+    },
 });
 
-const hashPassword = (user) => {
-    // console.log(`[USER]`, blarg)
-    bcrypt.genSalt(saltRounds, (err, salt) => {
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            console.log(`HASH`, hash)
-            user.password = hash
-            console.log(`[PW]`, user.password)
-        })
-    })
-}
-// test();
-User.beforeCreate(hashPassword)
+User.encryptPassword = function (plainPassword, salt) {
+    return crypto.createHash("RSA-SHA256").update(plainPassword).update(salt).digest("hex");
+};
+
+const setSaltAndPassword = async (user) => {
+    if (user.changed("password")) {
+        const passwordHash = await bcrypt.hash(user.password(), 10)
+        user.password = passwordHash
+    }
+    // const isvalid = await bcrypt.compare('123456', user.password())
+    // console.log(isvalid)
+};
+
+
+User.beforeCreate(setSaltAndPassword);
+User.beforeUpdate(setSaltAndPassword);
+
 module.exports = User;
