@@ -1,5 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../db");
+const bcrypt = require('bcrypt');
+const saltRounds = 10
 
 const User = db.define("user", {
     username: {
@@ -16,8 +18,20 @@ const User = db.define("user", {
     password: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: { min: 8 },
+        validate: { min: 8 }
     }
 });
 
-module.exports = User
+const hashPassword = (user) => {
+    // console.log(`[USER]`, blarg)
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        bcrypt.hash(user.password, salt, (err, hash) => {
+            console.log(`HASH`, hash)
+            user.password = hash
+            console.log(`[PW]`, user.password)
+        })
+    })
+}
+// test();
+User.beforeCreate(hashPassword)
+module.exports = User;
