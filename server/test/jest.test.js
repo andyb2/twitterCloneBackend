@@ -37,7 +37,7 @@ describe('login wrong password', () => {
     });
 });
 
-describe('log user out', () => {
+describe('logout user', () => {
     it('returns status code 204 when the user successfully logs out', async () => {
         const res = await request(app).delete('/auth/logout')
         expect(res.statusCode).toEqual(204);
