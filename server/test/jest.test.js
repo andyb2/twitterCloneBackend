@@ -9,19 +9,16 @@ describe('register', () => {
                 password: '123456',
                 email: 'todd@test.com',
             })
+        console.log(`RES`, res)
         expect(res.statusCode).toEqual(201);
 
     })
 })
 
-describe('login', () => {
-    it('returns status code 201 if the user successfully logs in', async () => {
-        const res = await request(app).post('/auth/login')
-            .send({
-                username: 'Todd',
-                password: '123456'
-            });
-        expect(res.statusCode).toEqual(201);
+describe('logout user', () => {
+    it('returns status code 204 when the user successfully logs out', async () => {
+        const res = await request(app).delete('/auth/logout')
+        expect(res.statusCode).toEqual(204);
     });
 });
 
@@ -36,9 +33,15 @@ describe('login wrong password', () => {
     });
 });
 
-describe('logout user', () => {
-    it('returns status code 204 when the user successfully logs out', async () => {
-        const res = await request(app).delete('/auth/logout')
-        expect(res.statusCode).toEqual(204);
+describe('login', () => {
+    it('returns status code 201 if the user successfully logs in', async () => {
+        const res = await request(app).post('/auth/login')
+            .send({
+                username: 'Todd',
+                password: '123456'
+            });
+        expect(res.statusCode).toEqual(201);
     });
 });
+
+
