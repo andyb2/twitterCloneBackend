@@ -50,6 +50,7 @@ router.post('/login', async (req, res, next) => {
         if (userData !== null) {
             pwIsValid = await userData.checkCorrectPassword(password, userData.password());
         }
+        // if username not found in DB respond with error
         if (userData === null) {
             console.log({ error: `${username} was not found` });
             res.status(401).json({ error: `${username} was not found` });
@@ -57,6 +58,7 @@ router.post('/login', async (req, res, next) => {
             console.log({ error: `Wrong username or password` });
             res.status(401).json({ error: `Wrong username or password` });
         } else {
+            // token created on successful login
             const token = jwt.sign(
                 { id: userData.dataValues.id },
                 process.env.SESSION_SECRET,
