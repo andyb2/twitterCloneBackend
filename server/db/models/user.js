@@ -29,15 +29,13 @@ User.prototype.checkCorrectPassword = async (password, hash) => {
     return isCorrect
 }
 
-const setSaltAndPassword = async (user) => {
+const passwordHash = async (user) => {
     if (user.changed("password")) {
         const passwordHash = await bcrypt.hash(user.password(), 10)
         user.password = passwordHash
     }
 };
 
-
-User.beforeCreate(setSaltAndPassword);
-User.beforeUpdate(setSaltAndPassword);
+User.beforeCreate(passwordHash);
 
 module.exports = User;
