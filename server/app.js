@@ -1,6 +1,5 @@
 require('dotenv');
 const express = require('express');
-const session = require("express-session");
 const { join } = require("path");
 
 const app = express();
