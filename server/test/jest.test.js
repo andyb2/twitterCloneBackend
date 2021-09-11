@@ -9,7 +9,6 @@ describe('register', () => {
                 password: '123456',
                 email: 'todd@test.com',
             })
-        console.log(`RES`, res)
         expect(res.statusCode).toEqual(201);
 
     })
@@ -29,6 +28,18 @@ describe('login wrong password', () => {
                 username: 'Todd',
                 password: '123455'
             });
+        expect(res.statusCode).toEqual(401);
+    });
+});
+
+describe('login wrong username', () => {
+    it('returns status code 401 if the user inputs wrong username', async () => {
+        const res = await request(app).post('/auth/login')
+            .send({
+                username: 'Todd1',
+                password: '123456'
+            });
+        console.log(`RES`, res.statusCode)
         expect(res.statusCode).toEqual(401);
     });
 });
