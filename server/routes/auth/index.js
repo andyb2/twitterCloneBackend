@@ -26,7 +26,7 @@ router.post('/register', async (req, res, next) => {
             process.env.SESSION_SECRET,
             { expiresIn: 86400 }
         );
-        res.sendStatus(201).json({
+        res.status(201).json({
             id: registerUser.dataValues.id,
             username: registerUser.dataValues.username,
             email: registerUser.dataValues.email,
@@ -45,8 +45,12 @@ router.post('/login', async (req, res, next) => {
                 username: req.body.username
             }
         });
-        const pwIsValid = await userData.checkCorrectPassword(password, userData.password());
-        if (!userData) {
+        let pwIsValid;
+        // if the user inputs a username that is not found in the DB pwIsValid wont check for a password
+        if (userData !== null) {
+            pwIsValid = await userData.checkCorrectPassword(password, userData.password());
+        }
+        if (userData === null) {
             console.log({ error: `${username} was not found` });
             res.status(401).json({ error: `${username} was not found` });
         } else if (pwIsValid === false) {
@@ -58,7 +62,7 @@ router.post('/login', async (req, res, next) => {
                 process.env.SESSION_SECRET,
                 { expiresIn: 86400 }
             );
-            res.sendStatus(201).json({
+            res.status(201).json({
                 id: userData.dataValues.id,
                 username: userData.dataValues.username,
                 email: userData.dataValues.email,
@@ -71,7 +75,11 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.delete('/logout', (req, res, next) => {
-    res.sendStatus(204);
+    try {
+        res.sendStatus(204)
+    } catch (error) {
+        next(error)
+    }
 })
 
 module.exports = router;
