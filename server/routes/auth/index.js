@@ -22,14 +22,14 @@ router.post('/register', async (req, res, next) => {
             res.status(401).json({ error: `Sorry failed to create entry for ${registerUser.username}` });
         }
         const token = jwt.sign(
-            { id: userData.dataValues.id },
+            { id: registerUser.dataValues.id },
             process.env.SESSION_SECRET,
             { expiresIn: 86400 }
         );
-        res.status(201).json({
-            id: userData.dataValues.id,
-            username: userData.dataValues.username,
-            email: userData.dataValues.email,
+        res.sendStatus(201).json({
+            id: registerUser.dataValues.id,
+            username: registerUser.dataValues.username,
+            email: registerUser.dataValues.email,
             token: token
         });
     } catch (error) {
@@ -58,7 +58,7 @@ router.post('/login', async (req, res, next) => {
                 process.env.SESSION_SECRET,
                 { expiresIn: 86400 }
             );
-            res.status(201).json({
+            res.sendStatus(201).json({
                 id: userData.dataValues.id,
                 username: userData.dataValues.username,
                 email: userData.dataValues.email,
