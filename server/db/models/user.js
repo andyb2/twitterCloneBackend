@@ -37,5 +37,6 @@ const passwordHash = async (user) => {
 };
 
 User.beforeCreate(passwordHash);
+User.beforeUpdate(passwordHash);
 
 module.exports = User;
