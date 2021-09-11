@@ -1,5 +1,30 @@
 const request = require('supertest');
-const app = require('../app')
+const app = require('../app');
+
+describe('register password length less than 6 characters', () => {
+    it('returns status code 400 if user inputs incorrect password min', async () => {
+        const res = await request(app).post('/auth/register')
+            .send({
+                username: "Todd",
+                password: '12345',
+                email: 'todd@test.com',
+            })
+        expect(res.statusCode).toEqual(400);
+
+    })
+})
+
+describe('user forgets to input email on registration', () => {
+    it('returns status code 400 if user forgets email input', async () => {
+        const res = await request(app).post('/auth/register')
+            .send({
+                username: "Todd",
+                password: '123456',
+            })
+        expect(res.statusCode).toEqual(400);
+
+    })
+})
 
 describe('register', () => {
     it('returns status code 201 if user successfully registered', async () => {
