@@ -16,11 +16,13 @@ router.post('/register', async (req, res, next) => {
             email: email,
             password: password
         };
+        // creates a new user account
         const registerUser = await User.create(registerData)
         if (!registerUser.id) {
             console.log({ error: `Sorry failed to create entry for ${registerUser.username}` });
             res.status(401).json({ error: `Sorry failed to create entry for ${registerUser.username}` });
         }
+        // creates token on registration.. user will be logged in automatically
         const token = jwt.sign(
             { id: registerUser.dataValues.id },
             process.env.SESSION_SECRET,
@@ -40,6 +42,7 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
     try {
         const { username, password } = req.body;
+        // searches database to find if the username exists
         const userData = await User.findOne({
             where: {
                 username: req.body.username
