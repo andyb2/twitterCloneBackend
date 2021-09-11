@@ -24,20 +24,21 @@ const User = db.define("user", {
     },
 });
 
+// checks the users password input to the hashed password stored in the DB and returns true if input matches
 User.prototype.checkCorrectPassword = async (password, hash) => {
     const isCorrect = await bcrypt.compare(password, hash)
     return isCorrect
 }
-
-const setSaltAndPassword = async (user) => {
+// takes the user input and hashes the password in the DB
+const passwordHash = async (user) => {
     if (user.changed("password")) {
         const passwordHash = await bcrypt.hash(user.password(), 10)
         user.password = passwordHash
     }
 };
-
-
-User.beforeCreate(setSaltAndPassword);
-User.beforeUpdate(setSaltAndPassword);
+// before a new user is created run the passwordHash function to hash password
+User.beforeCreate(passwordHash);
+// if the user changes their password.. passwordHash function will run to hash new password
+User.beforeUpdate(passwordHash);
 
 module.exports = User;

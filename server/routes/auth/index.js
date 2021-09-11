@@ -16,20 +16,22 @@ router.post('/register', async (req, res, next) => {
             email: email,
             password: password
         };
+        // creates a new user account
         const registerUser = await User.create(registerData)
         if (!registerUser.id) {
             console.log({ error: `Sorry failed to create entry for ${registerUser.username}` });
             res.status(401).json({ error: `Sorry failed to create entry for ${registerUser.username}` });
         }
+        // creates token on registration.. user will be logged in automatically
         const token = jwt.sign(
-            { id: userData.dataValues.id },
+            { id: registerUser.dataValues.id },
             process.env.SESSION_SECRET,
             { expiresIn: 86400 }
         );
         res.status(201).json({
-            id: userData.dataValues.id,
-            username: userData.dataValues.username,
-            email: userData.dataValues.email,
+            id: registerUser.dataValues.id,
+            username: registerUser.dataValues.username,
+            email: registerUser.dataValues.email,
             token: token
         });
     } catch (error) {
@@ -40,19 +42,26 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
     try {
         const { username, password } = req.body;
+        // searches database to find if the username exists
         const userData = await User.findOne({
             where: {
                 username: req.body.username
             }
         });
-        const pwIsValid = await userData.checkCorrectPassword(password, userData.password());
-        if (!userData) {
+        let pwIsValid;
+        // if the user inputs a username that is not found in the DB pwIsValid wont check for a password
+        if (userData !== null) {
+            pwIsValid = await userData.checkCorrectPassword(password, userData.password());
+        }
+        // if username not found in DB respond with error
+        if (userData === null) {
             console.log({ error: `${username} was not found` });
             res.status(401).json({ error: `${username} was not found` });
         } else if (pwIsValid === false) {
             console.log({ error: `Wrong username or password` });
             res.status(401).json({ error: `Wrong username or password` });
         } else {
+            // token created on successful login
             const token = jwt.sign(
                 { id: userData.dataValues.id },
                 process.env.SESSION_SECRET,
@@ -71,7 +80,11 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.delete('/logout', (req, res, next) => {
-    res.sendStatus(204);
+    try {
+        res.sendStatus(204)
+    } catch (error) {
+        next(error)
+    }
 })
 
 module.exports = router;
